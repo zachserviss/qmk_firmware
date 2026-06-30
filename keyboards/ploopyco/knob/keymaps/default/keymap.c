@@ -50,10 +50,10 @@ report_mouse_t pointing_device_task_user(report_mouse_t mouse_report) {
     if (num) {
         if (delta > POINTING_DEVICE_AS5600_TICK_COUNT) {
             current_position = ra;
-            tap_code(KC_BRID)
+            tap_code(KC_BRID);
         } else if (delta < -POINTING_DEVICE_AS5600_TICK_COUNT) {
             current_position = ra;
-            tap_code(KC_BRIU)
+            tap_code(KC_BRIU);
         }
         return mouse_report;
     }
@@ -62,10 +62,22 @@ report_mouse_t pointing_device_task_user(report_mouse_t mouse_report) {
     if (caps) {
         if (delta > POINTING_DEVICE_AS5600_TICK_COUNT) {
             current_position = ra;
-            tap_code(KC_VOLD)
+            tap_code(KC_VOLD);
         } else if (delta < -POINTING_DEVICE_AS5600_TICK_COUNT) {
             current_position = ra;
-            tap_code(KC_VOLU)
+            tap_code(KC_VOLU);
+        }
+        return mouse_report;
+    }
+
+    //horizontal scroll on scroll lock
+    if (scroll) {
+        if (delta > POINTING_DEVICE_AS5600_TICK_COUNT) {
+            current_position = ra;
+            mouse_report.h = 1;
+        } else if (delta < -POINTING_DEVICE_AS5600_TICK_COUNT) {
+            current_position = ra;
+            mouse_report.h = -1;
         }
         return mouse_report;
     }
