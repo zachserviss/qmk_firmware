@@ -72,12 +72,23 @@ report_mouse_t pointing_device_task_user(report_mouse_t mouse_report) {
 
     //horizontal scroll on scroll lock
     if (scroll) {
-        if (delta > POINTING_DEVICE_AS5600_TICK_COUNT) {
+        if (detected_host_os() == OS_WINDOWS || detected_host_os() == OS_LINUX) {
+        // Establish a deadzone to prevent spurious inputs
+            if (delta > POINTING_DEVICE_AS5600_DEADZONE || delta < -POINTING_DEVICE_AS5600_DEADZONE) {
             current_position = ra;
-            mouse_report.h = 1;
-        } else if (delta < -POINTING_DEVICE_AS5600_TICK_COUNT) {
-            current_position = ra;
-            mouse_report.h = -1;
+            mouse_report.h = delta / POINTING_DEVICE_AS5600_SPEED_DIV;
+            }
+        } else {
+        // Certain operating systems, like MacOS, don't play well with the
+        // high-res scrolling implementation. For more details, see:
+        // https://github.com/qmk/qmk_firmware/issues/17585#issuecomment-2325248167
+            if (delta >= POINTING_DEVICE_AS5600_TICK_COUNT) {
+                current_position = ra;
+                mouse_report.h = 1;
+            } else if (delta <= -POINTING_DEVICE_AS5600_TICK_COUNT) {
+                current_position = ra;
+                mouse_report.h = -1;
+            }
         }
         return mouse_report;
     }
